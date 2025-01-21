@@ -27,6 +27,33 @@ load_dotenv()
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
+def list_audio_devices():
+    audio = pyaudio.PyAudio()
+    info = []
+    
+    for i in range(audio.get_device_count()):
+        device_info = audio.get_device_info_by_index(i)
+        info.append({
+            'index': i,
+            'name': device_info['name'],
+            'maxInputChannels': device_info['maxInputChannels'],
+            'maxOutputChannels': device_info['maxOutputChannels'],
+            'defaultSampleRate': device_info['defaultSampleRate']
+        })
+    
+    audio.terminate()
+    return info
+
+def print_audio_devices():
+    devices = list_audio_devices()
+    print("\nAvailable Audio Devices:")
+    for device in devices:
+        print(f"\nDevice {device['index']}:")
+        print(f"Name: {device['name']}")
+        print(f"Max Input Channels: {device['maxInputChannels']}")
+        print(f"Max Output Channels: {device['maxOutputChannels']}")
+        print(f"Default Sample Rate: {device['defaultSampleRate']}")
+
 class VoicebotHandler:
     def __init__(self):
         self.api_key_manager = APIKeyManager()
@@ -52,12 +79,10 @@ class VoicebotHandler:
             except Exception as e:
                 error_message = str(e).lower()
                 if "rate limit" in error_message or "quota exceeded" in error_message:
-                    # Mark the current key as having an error
                     self.api_key_manager.mark_key_error(api_key)
                     print(f"API key rate limited, trying another key...")
                     continue
                 else:
-                    # For other errors, raise them
                     raise e
 
 # Initialize the chat history
@@ -76,9 +101,7 @@ chat_history = [
         8. Ethical reasoning: Provide guidance while considering moral implications and societal impact.
         9. Clear and concise communication: Always provide context-relevant, clear, and very short answers to maintain efficiency and effectiveness.
 
-        Tailor your responses to enhance the user's understanding and overall experience. Be concise yet thorough, balancing depth with accessibility. Encourage critical thinking and explore topics from multiple angles when appropriate.
-
-        Always maintain a respectful, empathetic, and professional demeanor while engaging users in stimulating and insightful conversations.
+        Tailor your responses to enhance the user's understanding and overall experience. Be concise yet thorough, balancing depth with accessibility.
         """
     }
 ]
@@ -97,22 +120,47 @@ class AudioStreamer:
     def __init__(self):
         try:
             self.audio = pyaudio.PyAudio()
+            
+            # List available input devices
+            input_device_index = None
+            for i in range(self.audio.get_device_count()):
+                device_info = self.audio.get_device_info_by_index(i)
+                if device_info['maxInputChannels'] > 0:  # This is an input device
+                    input_device_index = i
+                    logging.info(f"Selected input device: {device_info['name']} (index: {i})")
+                    break
+            
+            if input_device_index is None:
+                raise Exception("No input device found")
+                
             self.stream = self.audio.open(
-                format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK_SIZE
+                format=FORMAT,
+                channels=CHANNELS,
+                rate=RATE,
+                input=True,
+                input_device_index=input_device_index,
+                frames_per_buffer=CHUNK_SIZE
             )
             self.vad = webrtcvad.Vad(VAD_MODE)
             self.is_recording = False
             self.frames = []
+            
         except Exception as e:
             logging.error(f"Failed to initialize AudioStreamer: {e}")
-            raise
-
+            self.stream = None
+            self.audio = None
+            
     def start_recording(self, stop_event):
+        if self.stream is None:
+            logging.error("No audio device available")
+            return
+            
         self.is_recording = True
         self.frames = []
         ring_buffer = collections.deque(maxlen=PADDING_CHUNKS)
         triggered = False
         logging.info("Audio recording started")
+        
         while self.is_recording and not stop_event.is_set():
             try:
                 chunk = self.stream.read(CHUNK_SIZE, exception_on_overflow=False)
@@ -135,6 +183,7 @@ class AudioStreamer:
                         ring_buffer.clear()
             except Exception as e:
                 logging.error(f"Error while recording audio: {e}")
+                break
 
     def stop_recording(self):
         self.is_recording = False
@@ -142,10 +191,11 @@ class AudioStreamer:
 
     def close(self):
         try:
-            if self.stream.is_active():
+            if self.stream and self.stream.is_active():
                 self.stream.stop_stream()
-            self.stream.close()
-            self.audio.terminate()
+                self.stream.close()
+            if self.audio:
+                self.audio.terminate()
             logging.info("Audio resources released")
         except Exception as e:
             logging.error(f"Failed to release audio resources: {e}")
@@ -180,36 +230,41 @@ def process_input(input_queue, output_queue, user_input_queue, socketio):
     voicebot_handler = VoicebotHandler()
 
     while True:
-        user_input = input_queue.get()
-        if user_input.lower() == "exit":
-            break
-
-        user_input_queue.put(user_input)
-        chat_history.append({"role": "user", "content": user_input})
-        
-        attempt = 0
-        while attempt < retry_attempts:
-            try:
-                assistant_response = voicebot_handler.get_groq_response(chat_history)
-                chat_history.append({"role": "assistant", "content": assistant_response})
-                
-                # Emit bot response to frontend
-                socketio.emit('message', {'text': assistant_response, 'isUser': False})
-                
-                # Send response to text-to-speech
-                speak(assistant_response)
-                
-                output_queue.put((user_input, assistant_response))
+        try:
+            user_input = input_queue.get()
+            if user_input.lower() == "exit":
                 break
-            except groq.InternalServerError as e:
-                logging.error(f"Groq API error: {e}. Retrying in {retry_delay} seconds...")
-                attempt += 1
-                time.sleep(retry_delay)
 
-        if attempt == retry_attempts:
-            error_message = "Sorry, the service is currently unavailable. Please try again later."
-            socketio.emit('message', {'text': error_message, 'isUser': False})
-            output_queue.put((user_input, error_message))
+            user_input_queue.put(user_input)
+            chat_history.append({"role": "user", "content": user_input})
+            
+            attempt = 0
+            while attempt < retry_attempts:
+                try:
+                    assistant_response = voicebot_handler.get_groq_response(chat_history)
+                    chat_history.append({"role": "assistant", "content": assistant_response})
+                    
+                    # Emit bot response to frontend
+                    socketio.emit('message', {'text': assistant_response, 'isUser': False})
+                    
+                    # Send response to text-to-speech
+                    speak(assistant_response)
+                    
+                    output_queue.put((user_input, assistant_response))
+                    break
+                except groq.InternalServerError as e:
+                    logging.error(f"Groq API error: {e}. Retrying in {retry_delay} seconds...")
+                    attempt += 1
+                    time.sleep(retry_delay)
+
+            if attempt == retry_attempts:
+                error_message = "Sorry, the service is currently unavailable. Please try again later."
+                socketio.emit('message', {'text': error_message, 'isUser': False})
+                output_queue.put((user_input, error_message))
+                
+        except Exception as e:
+            logging.error(f"Error in process_input: {e}")
+            continue
 
 def setup_voicebot_routes(app, socketio, auth_required=None, track_tool_usage=None):
     """Set up routes for the voicebot with authentication and usage tracking"""
@@ -218,7 +273,15 @@ def setup_voicebot_routes(app, socketio, auth_required=None, track_tool_usage=No
     output_queue = queue.Queue()
     user_input_queue = queue.Queue()
     stop_event = threading.Event()
-    audio_streamer = AudioStreamer()
+    
+    # Print available audio devices for debugging
+    print_audio_devices()
+    
+    try:
+        audio_streamer = AudioStreamer()
+    except Exception as e:
+        logging.error(f"Failed to initialize AudioStreamer: {e}")
+        audio_streamer = None
 
     @app.route('/voicebot')
     @auth_required if auth_required else lambda f: f
@@ -235,9 +298,15 @@ def setup_voicebot_routes(app, socketio, auth_required=None, track_tool_usage=No
     def handle_disconnect():
         logging.info('Client disconnected')
         stop_event.set()
+        if audio_streamer:
+            audio_streamer.close()
 
     @socketio.on('start_recording')
     def handle_start_recording():
+        if not audio_streamer or audio_streamer.stream is None:
+            socketio.emit('error', {'message': 'No audio device available'})
+            return
+            
         logging.info('Starting voice recording')
         stop_event.clear()
         threading.Thread(target=continuous_stt, 
@@ -251,7 +320,8 @@ def setup_voicebot_routes(app, socketio, auth_required=None, track_tool_usage=No
     def handle_stop_recording():
         logging.info('Stopping voice recording')
         stop_event.set()
-        audio_streamer.stop_recording()
+        if audio_streamer:
+            audio_streamer.stop_recording()
 
     return app
 
@@ -272,6 +342,8 @@ def continuous_stt(input_queue, stop_event, audio_streamer, socketio):
         logging.info("Stopping STT service.")
     except Exception as e:
         logging.error(f"Error in STT service: {e}")
+        socketio.emit('error', {'message': f'Audio processing error: {str(e)}'})
     finally:
-        audio_streamer.stop_recording()
-        audio_streamer.close()
+        if audio_streamer:
+            audio_streamer.stop_recording()
+            audio_streamer.close()
