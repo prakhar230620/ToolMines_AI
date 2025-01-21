@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Your App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    {% include 'layout/header.html' %}
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.name[0].upper() if user.name else 'U' }}
+            </div>
+            <h2>{{ user.name }}</h2>
+        </div>
+        
+        <div class="profile-info">
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Type:</span>
+                <span class="info-value">{{ 'Google Account' if user.google_id else 'Email Account' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Joined:</span>
+                <span class="info-value">{{ user.created_at.strftime('%B %d, %Y') }}</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="btn btn-secondary">
+                <i class="ph ph-house"></i>
+                Go to Home
+            </a>
+            <form action="{{ url_for('auth.logout') }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="ph ph-sign-out"></i>
+                    Logout
+                </button>
+            <a href="{{ url_for('auth.forgot_password') }}" class="btn btn-secondary">
+                <i class="ph ph-lock"></i>
+                Change Password
+            </a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Update Index Page{% endblock %}
+
+{% block head_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_index.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="index-editor">
+    <h2>Update Index Page Content</h2>
+    
+    <!-- Tool Cards Editor -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Tool Cards</h3>
+            <button class="btn btn-success" id="addToolCard">Add New Tool</button>
+        </div>
+        <div class="card-body">
+            <div id="toolCards">
+                {% for tool in tools %}
+                <div class="tool-card-editor mb-4" data-id="{{ tool.id }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="toolCardForm row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tool Name</label>
+                                        <input type="text" class="form-control" name="name" value="{{ tool.name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Icon Class (e.g., ph ph-robot)</label>
+                                        <input type="text" class="form-control" name="icon" value="{{ tool.icon }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" name="description" rows="3" required>{{ tool.description }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Badge Type</label>
+                                        <select class="form-control" name="badge_type">
+                                            <option value="popular" {% if tool.badge_type == 'popular' %}selected{% endif %}>Popular</option>
+                                            <option value="trending" {% if tool.badge_type == 'trending' %}selected{% endif %}>Trending</option>
+                                            <option value="new" {% if tool.badge_type == 'new' %}selected{% endif %}>New</option>
+                                            <option value="none" {% if tool.badge_type == 'none' %}selected{% endif %}>None</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tool Link</label>
+                                        <input type="text" class="form-control" name="link" value="{{ tool.link }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Features (one per line)</label>
+                                        <textarea class="form-control" name="features" rows="3" required>{{ tool.features|join('\n') }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Button Text</label>
+                                        <input type="text" class="form-control" name="button_text" value="{{ tool.button_text }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary me-2">Update Tool</button>
+                                    <button type="button" class="btn btn-danger delete-tool">Delete Tool</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tool Card Form Submission
+    document.querySelectorAll('.toolCardForm').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convert features from text to array
+            data.features = data.features.split('\n').filter(f => f.trim());
+            
+            const toolId = this.closest('.tool-card-editor').dataset.id;
+            
+            try {
+                const response = await fetch(`/api/admin/index/tool/${toolId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Tool card updated successfully!');
+                } else {
+                    alert('Failed to update tool card');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating tool card');
+            }
+        });
+    });
+
+    // Delete Tool
+    document.querySelectorAll('.delete-tool').forEach(button => {
+        button.addEventListener('click', async function() {
+            if (!confirm('Are you sure you want to delete this tool?')) return;
+            
+            const toolId = this.closest('.tool-card-editor').dataset.id;
+            try {
+                const response = await fetch(`/api/admin/index/tool/${toolId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    this.closest('.tool-card-editor').remove();
+                    alert('Tool deleted successfully!');
+                } else {
+                    alert('Failed to delete tool');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while deleting tool');
+            }
+        });
+    });
+
+    // Add New Tool Card
+    document.getElementById('addToolCard').addEventListener('click', async function() {
+        try {
+            const response = await fetch('/api/admin/index/tool', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: 'New Tool',
+                    icon: 'ph ph-tool',
+                    description: 'Tool description',
+                    badge_type: 'new',
+                    link: '/new-tool',
+                    features: ['Feature 1', 'Feature 2', 'Feature 3'],
+                    button_text: 'Try Now'
+                })
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to add new tool');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding new tool');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools Collection - ToolMines AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='tools.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    {% include 'layout/header.html' %}
+    <main class="tools-main">
+        <section class="tools-hero">
+            <div class="container">
+                <h1 class="tools-title">AI-Powered Tools Collection</h1>
+                <p class="tools-subtitle">Explore our comprehensive suite of AI tools designed to enhance your productivity</p>
+                <div class="search-container">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="toolSearch" placeholder="Search for tools...">
+                </div>
+            </div>
+            <div class="hero-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </section>
+
+        <section class="tools-grid">
+            <div class="container">
+                <div class="tools-categories">
+                    <button class="category-btn active" data-category="all">All Tools</button>
+                    <button class="category-btn" data-category="conversion">Conversion</button>
+                    <button class="category-btn" data-category="analysis">Analysis</button>
+                    <button class="category-btn" data-category="generation">Generation</button>
+                </div>
+
+                <div class="tools-container">
+                    <!-- Tool Card 1 -->
+                    <div class="tool-card" data-category="conversion">
+                        <div class="tool-icon">
+                            <i class="ph ph-robot"></i>
+                        </div>
+                        <h3>Chatbot</h3>
+                        <p>Experience the future of conversation with our AI chatbot. Engage in natural, human-like dialogue and receive informative responses.</p>    
+                        <a href="/chatbot" class="tool-link">
+                            Try Now <i class="ph ph-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <!-- Tool Card 2 -->
+                    <div class="tool-card" data-category="conversion">
+                        <div class="tool-icon">
+                            <i class="ph ph-microphone"></i>
+                        </div>
+                        <h3>Voicebot</h3>
+                        <p>Translate your voice between different languages in real-time. Currently supports English only.</p>
+                        <a href="/voicebot" class="tool-link">
+                            Try Now <i class="ph ph-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <!-- Tool Card 3 -->
+                    <div class="tool-card" data-category="conversion">
+                        <div class="tool-icon">
+                            <i class="ph ph-file-doc"></i>
+                        </div>
+                        <h3>File Format Converter</h3>
+                        <p>Convert files between multiple formats. Supports multiple documents, images, and more. Fast and secure conversion for all your documents.</p>
+                        <a href="/converter" class="tool-link">
+                            Try Now <i class="ph ph-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <!-- Tool Card 4 -->
+                    <div class="tool-card" data-category="analysis">
+                        <div class="tool-icon">
+                            <i class="ph ph-translate"></i>
+                        </div>
+                        <h3>Text Translator</h3>
+                        <p>Translate text between 100+ languages instantly. Powered by advanced AI for accurate translations.</p>
+                        <a href="/lang_trans" class="tool-link">
+                            Try Now <i class="ph ph-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    {% include 'layout/footer.html' %}
+    <script>
+        // Search functionality
+        const toolSearch = document.getElementById('toolSearch');
+        const toolCards = document.querySelectorAll('.tool-card');
+
+        toolSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            toolCards.forEach(card => {
+                const toolName = card.querySelector('h3').textContent.toLowerCase();
+                const toolDesc = card.querySelector('p').textContent.toLowerCase();
+                const isVisible = toolName.includes(searchTerm) || toolDesc.includes(searchTerm);
+                card.style.display = isVisible ? 'flex' : 'none';
+                if (isVisible) {
+                    card.classList.add('fade-in');
+                }
+            });
+        });
+
+        // Category filtering
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const category = btn.dataset.category;
+                toolCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'flex';
+                        card.classList.add('fade-in');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add hover animation to tool cards
+        toolCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const effect = card.querySelector('.tool-hover-effect');
+                effect.style.transform = 'scale(1.1)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                const effect = card.querySelector('.tool-hover-effect');
+                effect.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if not session.get('user_id') %}
+            // If user is not logged in, add click handlers to all tool links
+            const toolLinks = document.querySelectorAll('.tool-card a, .tool-card button');
+            toolLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = "{{ url_for('auth.login') }}";
+                });
+            });
+            {% endif %}
+        });
+    </script>
+</body>
+</html>

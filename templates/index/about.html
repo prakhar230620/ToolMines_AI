@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | ToolMines AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    {% include 'layout/header.html' %}
+    <main>
+        <section class="about-page-hero">
+            <div class="about-hero-bg">
+                <div class="about-animated-dots"></div>
+                <div class="about-gradient-overlay"></div>
+            </div>
+            <div class="about-hero-wrapper">
+                <div class="about-hero-text">
+                    <h1 class="about-title reveal-up">Empowering Innovation Through <span class="about-gradient-text">AI Technology</span></h1>
+                    <p class="about-description reveal-up delay-1">We're on a mission to democratize AI technology and make powerful tools accessible to everyone. Our platform brings together cutting-edge AI solutions that help businesses and individuals achieve more.</p>
+                    <div class="about-stats-grid reveal-up delay-2">
+                        <div class="about-stat-card">
+                            <span class="about-stat-number">50K+</span>
+                            <span class="about-stat-label">Active Users</span>
+                        </div>
+                        <div class="about-stat-card">
+                            <span class="about-stat-number">100+</span>
+                            <span class="about-stat-label">AI Tools</span>
+                        </div>
+                        <div class="about-stat-card">
+                            <span class="about-stat-number">98%</span>
+                            <span class="about-stat-label">Satisfaction Rate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-hero-visual reveal-side">
+                    <div class="about-floating-items">
+                        <div class="about-float-card card-1">
+                            <i class="ph ph-brain"></i>
+                            <span>Advanced AI</span>
+                        </div>
+                        <div class="about-float-card card-2">
+                            <i class="ph ph-rocket"></i>
+                            <span>Fast Processing</span>
+                        </div>
+                        <div class="about-float-card card-3">
+                            <i class="ph ph-shield-check"></i>
+                            <span>Secure & Reliable</span>
+                        </div>
+                        <div class="about-float-card card-4">
+                            <i class="ph ph-crown"></i>
+                            <span>Inovative Solutions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-values">
+            <div class="about-values-wrapper">
+                <div class="about-value-card">
+                    <div class="about-value-icon">
+                        <i class="ph ph-lightbulb"></i>
+                    </div>
+                    <h3>Innovation First</h3>
+                    <p>We constantly push boundaries and explore new possibilities in AI technology.</p>
+                </div>
+                
+                <div class="about-value-card">
+                    <div class="about-value-icon">
+                        <i class="ph ph-users"></i>
+                    </div>
+                    <h3>User-Centric</h3>
+                    <p>Everything we build is designed with our users' needs and success in mind.</p>
+                </div>
+                
+                <div class="about-value-card">
+                    <div class="about-value-icon">
+                        <i class="ph ph-shield"></i>
+                    </div>
+                    <h3>Trust & Security</h3>
+                    <p>We prioritize data security and maintain the highest standards of privacy.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-stats-section">
+            <div class="about-stats-wrapper">
+                <div class="about-stat-block">
+                    <span class="about-big-number">50K+</span>
+                    <span class="about-stat-text">Active Users</span>
+                </div>
+                <div class="about-stat-block">
+                    <span class="about-big-number">100+</span>
+                    <span class="about-stat-text">AI Tools</span>
+                </div>
+                <div class="about-stat-block">
+                    <span class="about-big-number">24/7</span>
+                    <span class="about-stat-text">Support</span>
+                </div>
+                <div class="about-stat-block">
+                    <span class="about-big-number">150+</span>
+                    <span class="about-stat-text">Countries</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-team-section">
+            <div class="about-team-wrapper">
+                <div class="about-section-header">
+                    <h2 class="reveal-up">The Creator</h2>
+                    <p class="reveal-up delay-1">I'm Prakhar Bankhede, a passionate AI enthusiast and developer with a vision to create innovative AI solutions</p>
+                </div>
+                
+                <div class="about-team-grid">
+                    
+                    <div class="about-team-card reveal-up delay-3">
+                        <div class="about-member-image">
+                            <img src="{{ url_for('static', filename='images/Prakhar Bankhede.jpg') }}" alt="Team Member">
+                            <div class="about-member-overlay">
+                                <div class="about-member-social">
+                                    <a href="#" class="about-social-link"><i class="ph ph-linkedin-logo"></i></a>
+                                    <a href="#" class="about-social-link"><i class="ph ph-twitter-logo"></i></a>
+                                    <a href="#" class="about-social-link"><i class="ph ph-github-logo"></i></a>
+                                    <a href="#" class="about-social-link"><i class="ph ph-instagram-logo"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="about-member-info">
+                            <h3>Prakhar Bankhede</h3>
+                            <span class="about-member-role">Lead Developer</span>
+                            <p class="about-member-bio">Full-stack developer with expertise in AI model deployment and scaling.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+ 
+    {% include 'layout/footer.html' %}
+</body>
+</html>

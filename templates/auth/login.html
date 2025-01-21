@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Your App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Please login to continue</p>
+            </div>
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            <form class="login-form" action="{{ url_for('auth.login') }}" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required value="{{ request.form.get('email', '') }}">
+                    <div class="input-focus-effect"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="input-focus-effect"></div>
+                </div>
+                {% if next_url %}
+                <input type="hidden" name="next" value="{{ next_url }}">
+                {% endif %}
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="/forgot-password" class="forgot-password">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+            </form>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div id="g_id_onload"
+                data-client_id="{{ google_client_id }}"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleGoogleSignIn"
+                data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left">
+            </div>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+            </div>
+        </div>
+        <div class="particles"></div>
+    </div>
+    
+    <script>
+        async function handleGoogleSignIn(response) {
+            try {
+                const res = await fetch('/google/callback?credential=' + response.credential);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const nextUrl = new URLSearchParams(window.location.search).get('next');
+                    window.location.href = nextUrl || data.redirect;
+                } else {
+                    console.error('Google sign-in failed:', data.error);
+                }
+            } catch (error) {
+                console.error('Error during Google sign-in:', error);
+            }
+        }
+    </script>
+</body>
+</html>

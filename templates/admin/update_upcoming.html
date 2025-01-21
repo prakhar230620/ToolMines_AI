@@ -1,0 +1,237 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Update Upcoming Page{% endblock %}
+
+{% block head_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_upcoming.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="upcoming-editor">
+    <h2>Update Upcoming Page Content</h2>
+    
+    <!-- Stats Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Statistics Section</h3>
+        </div>
+        <div class="card-body">
+            <form id="statsForm" class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Tools Count</label>
+                        <input type="number" class="form-control" name="tools_count" value="{{ stats.tools_count }}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Progress Percentage</label>
+                        <input type="number" class="form-control" name="progress" value="{{ stats.progress }}" min="0" max="100" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Release Quarter</label>
+                        <select class="form-control" name="quarter">
+                            <option value="Q1" {% if stats.quarter == 'Q1' %}selected{% endif %}>Q1</option>
+                            <option value="Q2" {% if stats.quarter == 'Q2' %}selected{% endif %}>Q2</option>
+                            <option value="Q3" {% if stats.quarter == 'Q3' %}selected{% endif %}>Q3</option>
+                            <option value="Q4" {% if stats.quarter == 'Q4' %}selected{% endif %}>Q4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Release Year</label>
+                        <input type="number" class="form-control" name="year" value="{{ stats.year }}" min="2024" required>
+                    </div>
+                </div>
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary">Update Statistics</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tool Cards Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Tool Cards</h3>
+            <button class="btn btn-success" id="addToolCard">Add New Tool Card</button>
+        </div>
+        <div class="card-body">
+            <div id="toolCards">
+                {% for tool in tools %}
+                <div class="tool-card-editor mb-4" data-id="{{ tool.id }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="toolCardForm row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tool Name</label>
+                                        <input type="text" class="form-control" name="name" value="{{ tool.name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Icon Class</label>
+                                        <input type="text" class="form-control" name="icon" value="{{ tool.icon }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" name="description" rows="3" required>{{ tool.description }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Launch Date</label>
+                                        <input type="month" class="form-control" name="launch_date" value="{{ tool.launch_date }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Progress (%)</label>
+                                        <input type="number" class="form-control" name="progress" value="{{ tool.progress }}" min="0" max="100" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Features (one per line)</label>
+                                        <textarea class="form-control" name="features" rows="3" required>{{ tool.features|join('\n') }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary me-2">Update Tool</button>
+                                    <button type="button" class="btn btn-danger delete-tool">Delete Tool</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Stats Form Submission
+    document.getElementById('statsForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch('/api/admin/upcoming/stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert('Statistics updated successfully!');
+            } else {
+                alert('Failed to update statistics.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating statistics.');
+        }
+    });
+
+    // Tool Card Form Submission
+    document.querySelectorAll('.toolCardForm').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const toolId = parseInt(this.closest('.tool-card-editor').dataset.id);
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convert features from textarea to array
+            data.features = data.features.split('\n').map(f => f.trim()).filter(f => f);
+            
+            try {
+                const response = await fetch(`/api/admin/upcoming/tool/${toolId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Tool updated successfully!');
+                } else {
+                    alert('Failed to update tool.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating tool.');
+            }
+        });
+    });
+
+    // Delete Tool Button Click
+    document.querySelectorAll('.delete-tool').forEach(button => {
+        button.addEventListener('click', async function() {
+            if (!confirm('Are you sure you want to delete this tool?')) return;
+            
+            const toolCard = this.closest('.tool-card-editor');
+            const toolId = parseInt(toolCard.dataset.id);
+            
+            try {
+                const response = await fetch(`/api/admin/upcoming/tool/${toolId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    toolCard.remove();
+                    alert('Tool deleted successfully!');
+                } else {
+                    alert('Failed to delete tool.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while deleting tool.');
+            }
+        });
+    });
+
+    // Add New Tool Card
+    document.getElementById('addToolCard').addEventListener('click', async function() {
+        const newTool = {
+            name: 'New Tool',
+            icon: 'ph ph-robot',
+            description: 'Tool description',
+            launch_date: new Date().toISOString().slice(0, 7),
+            progress: 0,
+            features: ['Feature 1', 'Feature 2', 'Feature 3']
+        };
+        
+        try {
+            const response = await fetch('/api/admin/upcoming/tool', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTool)
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to add new tool.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding new tool.');
+        }
+    });
+});
+</script>
+{% endblock %}

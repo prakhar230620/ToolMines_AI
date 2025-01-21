@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools Hub - Your Complete Solution Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    {% include 'layout/header.html' %}
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        <i class="ph ph-check-circle"></i>
+                        <span>Trusted by 50,000+ users worldwide</span>
+                    </div>
+                    <h1 class="animate__animated animate__fadeInDown">Your One-Stop Platform for All <span class="gradient-text">AI-Powered Tools</span></h1>
+                    <p class="hero-subtitle animate__animated animate__fadeInUp">Transform your workflow with our comprehensive suite of AI tools. From file conversion to advanced AI chat, everything you need is right here.</p>
+                    <div class="hero-buttons animate__animated animate__fadeInUp">
+                        <a href="/tools" class="btn btn-primary btn-large">
+                            <i class="ph ph-lightning"></i>
+                            Explore Tools
+                        </a>
+                        <a href="#tools" class="btn btn-secondary btn-large">
+                            <i class="ph ph-star"></i>
+                            Popular Tools
+                        </a>
+                    </div>
+                    <div class="hero-stats animate__animated animate__fadeInUp">
+                        <div class="stat-item">
+                            <span class="stat-number">50K+</span>
+                            <span class="stat-label">Active Users</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">100+</span>
+                            <span class="stat-label">AI Tools</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">4.5</span>
+                            <span class="stat-label">User Rating</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-animation">
+                    <div class="animated-logo">
+                        <svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" class="morphing-shape">
+                            <defs>
+                                <!-- Gradients -->
+                                <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.8"/>
+                                    <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.8"/>
+                                </linearGradient>
+                                
+                                <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                    <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.6"/>
+                                    <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:0"/>
+                                </radialGradient>
+
+                                <!-- Filters -->
+                                <filter id="neonGlow">
+                                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                                    <feComposite operator="over" in="blur"/>
+                                </filter>
+                            </defs>
+
+                            <!-- Background Glow -->
+                            <circle class="glow-orb" cx="250" cy="250" r="150" fill="url(#glowGradient)"/>
+
+                            <!-- Main 3D Structure -->
+                            <g class="rotating-structure">
+                                <!-- Cube Faces -->
+                                <path class="cube-face front" d="M150 150L350 150L350 350L150 350Z" fill="url(#mainGradient)" stroke="#4F46E5" stroke-width="2"/>
+                                <path class="cube-face top" d="M150 150L250 50L450 50L350 150Z" fill="url(#mainGradient)" stroke="#4F46E5" stroke-width="2"/>
+                                <path class="cube-face right" d="M350 150L450 50L450 250L350 350Z" fill="url(#mainGradient)" stroke="#4F46E5" stroke-width="2"/>
+
+                                <!-- Inner Elements -->
+                                <g class="inner-elements">
+                                    <!-- Central Sphere -->
+                                    <circle class="center-sphere" cx="250" cy="250" r="30" fill="#4F46E5" filter="url(#neonGlow)"/>
+                                    
+                                    <!-- Floating Rings -->
+                                    <circle class="floating-ring" cx="250" cy="250" r="60" stroke="#4F46E5" stroke-width="2" fill="none"/>
+                                    <circle class="floating-ring delayed" cx="250" cy="250" r="90" stroke="#4F46E5" stroke-width="2" fill="none"/>
+                                    
+                                    <!-- Orbiting Points -->
+                                    <g class="orbiting-points">
+                                        <circle class="orbit-point" cx="250" cy="160" r="8" fill="#4F46E5"/>
+                                        <circle class="orbit-point" cx="340" cy="250" r="8" fill="#4F46E5"/>
+                                        <circle class="orbit-point" cx="250" cy="340" r="8" fill="#4F46E5"/>
+                                        <circle class="orbit-point" cx="160" cy="250" r="8" fill="#4F46E5"/>
+                                    </g>
+                                </g>
+
+                                <!-- Dynamic Lines -->
+                                <g class="dynamic-lines" stroke="#4F46E5" stroke-width="2">
+                                    <line class="dynamic-line" x1="250" y1="160" x2="250" y2="340"/>
+                                    <line class="dynamic-line" x1="160" y1="250" x2="340" y2="250"/>
+                                    <line class="dynamic-line diagonal" x1="180" y1="180" x2="320" y2="320"/>
+                                    <line class="dynamic-line diagonal" x1="320" y1="180" x2="180" y2="320"/>
+                                </g>
+
+                                <!-- Energy Particles -->
+                                <g class="energy-particles">
+                                    <circle class="particle" r="4">
+                                        <animateMotion 
+                                            path="M250,160 A90,90 0 1,1 250,340 A90,90 0 1,1 250,160"
+                                            dur="3s"
+                                            repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle class="particle delayed" r="4">
+                                        <animateMotion 
+                                            path="M160,250 A90,90 0 1,1 340,250 A90,90 0 1,1 160,250"
+                                            dur="3s"
+                                            repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                            </g>
+
+                            <!-- Floating Elements -->
+                            <g class="floating-elements">
+                                <path class="floating-shape" d="M50 200L100 150L150 200L100 250Z" fill="#4F46E5" opacity="0.3">
+                                    <animateTransform
+                                        attributeName="transform"
+                                        type="translate"
+                                        values="0,0; 0,-20; 0,0"
+                                        dur="4s"
+                                        repeatCount="indefinite"/>
+                                </path>
+                                <path class="floating-shape" d="M350 200L400 150L450 200L400 250Z" fill="#4F46E5" opacity="0.3">
+                                    <animateTransform
+                                        attributeName="transform"
+                                        type="translate"
+                                        values="0,0; 0,20; 0,0"
+                                        dur="4s"
+                                        repeatCount="indefinite"/>
+                                </path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="tools-section">
+            <div class="section-header">
+                <h2>Powerful Tools at Your Fingertips</h2>
+                <p>Choose from our wide range of AI-powered tools</p>
+                <div class="tools-filter">
+                    <button class="filter-btn"><h3>Our Top Rated Tools<i class="ph ph-magic-wand"></i></h3></button>
+                </div>
+            </div>
+            <div class="tools-grid">
+                {% for tool in tools %}
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="{{ tool.icon }}"></i>
+                    </div>
+                    <div class="tool-header">
+                        <h3>{{ tool.name }}</h3>
+                        {% if tool.badge_type == 'popular' %}
+                        <span class="tool-badge popular">Popular<i class="ph ph-star"></i></span>
+                        {% elif tool.badge_type == 'trending' %}
+                        <span class="tool-badge-trending">Trending<i class="ph ph-fire"></i></span>
+                        {% elif tool.badge_type == 'new' %}
+                        <span class="tool-badge new">New<i class="ph ph-plus"></i></span>
+                        {% endif %}
+                    </div>
+                    <p>{{ tool.description }}</p>
+                    <ul class="feature-list">
+                        {% for feature in tool.features %}
+                        <li class="feature-item"><i class="ph ph-check"></i>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="tool-footer">
+                        <a href="{{ tool.link }}" class="btn btn-primary">{{ tool.button_text }} <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    {% include 'layout/footer.html' %}
+</body>
+</html>

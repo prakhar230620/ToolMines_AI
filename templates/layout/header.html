@@ -1,0 +1,100 @@
+<!-- Header Component -->
+<link rel="stylesheet" href="{{ url_for('static', filename='header.css') }}">
+<header class="header">
+    <nav class="nav-container">
+        <div class="logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 12L16 15L22 12M16 15V23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="16" cy="9" r="2" fill="currentColor"/>
+            </svg>
+            <span>ToolMines AI</span>
+        </div>
+        
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-content">
+            <ul class="nav-links">
+                <li><a href="/" class="{{ 'active' if request.endpoint == 'index' }}">
+                    <i class="ph ph-house"></i>Home
+                </a></li>
+                <li><a href="/tools" class="{{ 'active' if request.endpoint == 'tools' }}">
+                    <i class="ph ph-squares-four"></i>All Tools
+                </a></li>
+                <li><a href="/#tools" class="{{ 'active' if request.endpoint == 'popular' }}">
+                    <i class="ph ph-star"></i>Popular
+                </a></li>
+                <li><a href="/upcoming" class="{{ 'active' if request.endpoint == 'upcoming' }}">
+                    <i class="ph ph-clock"></i>Upcoming
+                </a></li>
+                <li><a href="/about" class="{{ 'active' if request.endpoint == 'about' }}">
+                    <i class="ph ph-info"></i>About
+                </a></li>
+                <li><a href="/contact" class="{{ 'active' if request.endpoint == 'contact' }}">
+                    <i class="ph ph-envelope"></i>Contact
+                </a></li>
+            </ul>
+            
+            <div class="nav-buttons">
+                {% if session.get('user_id') %}
+                    <div class="profile-menu">
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-secondary">
+                            <i class="ph ph-user-circle"></i>
+                            Profile
+                        </a>
+                        <form action="{{ url_for('auth.logout') }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ph ph-sign-out"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">
+                        <i class="ph ph-user"></i>Sign In
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                        <i class="ph ph-arrow-right"></i>Try Now
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navContent = document.querySelector('.nav-content');
+    
+    mobileMenuBtn.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navContent.classList.toggle('active');
+    });
+
+    // Close menu when clicking on a link
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenuBtn.classList.remove('active');
+            navContent.classList.remove('active');
+        });
+    });
+});
+</script>
+
+<style>
+.profile-menu {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.profile-menu .btn {
+    padding: 8px 16px;
+}
+</style>

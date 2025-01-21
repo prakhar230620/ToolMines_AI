@@ -1,0 +1,154 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<footer class="footer">
+    <div class="footer-waves">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path class="wave1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            <path class="wave2" d="M0,192L48,176C96,160,192,128,288,128C384,128,480,160,576,176C672,192,768,192,864,176C960,160,1056,128,1152,128C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    <div class="footer-content">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 12L16 15L22 12M16 15V23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="16" cy="9" r="2" fill="currentColor"/>
+                    </svg>
+                    <span>ToolMines AI</span>
+                </div>
+                <p class="footer-description">Empowering your workflow with cutting-edge AI tools and solutions. Join our community of innovators and creators.</p>
+                <div class="footer-social">
+                    <a href="https://x.com/ToolMines_AI" target="_blank" class="social-link"><i class="ph ph-x-logo"></i></a>
+                    <a href="https://github.com/toolminesai" target="_blank" class="social-link"><i class="ph ph-github-logo"></i></a>
+                    <a href="https://www.linkedin.com/in/toolmines-ai-930245348" target="_blank" class="social-link"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="https://discord.gg/ySuVr6s6" target="_blank" class="social-link"><i class="ph ph-discord-logo"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links-group">
+                <h4>Products</h4>
+                <ul class="footer-links">
+                    <li><a href="/tools">All Tools</a></li>
+                    <li><a href="/#tools">Popular Tools</a></li>
+                    <li><a href="/upcoming">Coming Soon</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-group">
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/docs">Documentation</a></li>
+                    <li><a href="/tutorials">Tutorials</a></li>
+                    <li><a href="/api">API</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-group">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/partners">Partners</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Updated</h4>
+                <p>Get the latest updates about new features and releases.</p>
+                <form class="newsletter-form" id="newsletterForm" method="POST" action="{{ url_for('newsletter.submit_newsletter') }}">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+                <div id="newsletterMessage" class="newsletter-message"></div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-legal">
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+                <a href="/cookies">Cookie Policy</a>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2024 ToolMines AI. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const messageDiv = document.getElementById('newsletterMessage');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    const email = form.email.value;
+    
+    // Show loading state
+    submitBtn.textContent = 'Subscribing...';
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    messageDiv.textContent = '';
+    messageDiv.className = 'newsletter-message';
+    
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            messageDiv.textContent = data.message;
+            messageDiv.className = 'newsletter-message success';
+            form.reset();
+        } else if (data.redirect) {
+            // Store the current URL in session storage before redirecting
+            sessionStorage.setItem('lastAction', 'newsletter');
+            sessionStorage.setItem('newsletterEmail', email);
+            window.location.href = data.redirect;
+            return;
+        } else {
+            messageDiv.textContent = data.message || 'An error occurred. Please try again.';
+            messageDiv.className = 'newsletter-message error';
+        }
+    } catch (error) {
+        messageDiv.textContent = 'An error occurred. Please try again.';
+        messageDiv.className = 'newsletter-message error';
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalBtnText;
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+    }
+});
+
+// Check if user is returning from login
+document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('lastAction') === 'newsletter') {
+        const newsletterEmail = sessionStorage.getItem('newsletterEmail');
+        if (newsletterEmail) {
+            // Auto-submit the newsletter form
+            const form = document.getElementById('newsletterForm');
+            form.email.value = newsletterEmail;
+            
+            // Clear the stored data
+            sessionStorage.removeItem('lastAction');
+            sessionStorage.removeItem('newsletterEmail');
+            
+            // Submit the form
+            form.dispatchEvent(new Event('submit'));
+        }
+    }
+});
+</script>

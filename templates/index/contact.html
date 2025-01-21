@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | ToolMines AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='contact.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    {% include 'layout/header.html' %}
+    <main>
+        <section class="contact-hero-section">
+            <div class="contact-hero-wrapper">
+                <div class="contact-hero-content">
+                    <div class="contact-badges">
+                        <div class="contact-badge reveal-up">
+                            <i class="ph ph-envelope-simple"></i>
+                            <span>Email Support</span>
+                        </div>
+                        <div class="contact-badge reveal-up delay-1">
+                            <i class="ph ph-clock"></i>
+                            <span>Quick Response</span>
+                        </div>
+                        <div class="contact-badge reveal-up delay-2">
+                            <i class="ph ph-globe"></i>
+                            <span>Global Support</span>
+                        </div>
+                    </div>
+                    
+                    <h1 class="contact-hero-title reveal-up delay-2">
+                        Connect With 
+                        <span class="gradient-text">ToolMines AI</span>
+                    </h1>
+                    
+                    <p class="contact-hero-subtitle reveal-up delay-3">
+                        Have questions about our AI tools? Send us an email and follow us on social media 
+                        to stay updated with our latest innovations.
+                    </p>
+
+                    <div class="contact-hero-stats reveal-up delay-4">
+                        <div class="contact-stat">
+                            <span class="stat-number">24h</span>
+                            <span class="stat-label">Email Response</span>
+                        </div>
+                        <div class="contact-stat">
+                            <span class="stat-number">10K+</span>
+                            <span class="stat-label">Community Members target</span>
+                        </div>
+                        <div class="contact-stat">
+                            <span class="stat-number">100+</span>
+                            <span class="stat-label">AI Tools (upcoming)</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-hero-cta reveal-up delay-5">
+                        <a href="#contact-form" class="btn btn-primary">
+                            <i class="ph ph-envelope"></i>
+                            Send Email
+                        </a>
+                        <a href="https://discord.gg/ySuVr6s6" class="btn btn-secondary">
+                            <i class="ph ph-users"></i>
+                            Join Community
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-hero-visual">
+                    <div class="contact-floating-cards">
+                        <div class="floating-card reveal-right delay-3">
+                            <i class="ph ph-github-logo"></i>
+                            <div class="card-content">
+                                <h4>GitHub</h4>
+                                <p>Follow our open source projects</p>
+                                <a href="https://github.com/toolminesai" class="card-link" target="_blank">@ToolMinesAI</a>
+                            </div>
+                        </div>
+                        <div class="floating-card reveal-right delay-4">
+                            <i class="ph ph-x-logo"></i>
+                            <div class="card-content">
+                                <h4>Follow On X</h4>
+                                <p>Latest updates and announcements</p>
+                                <a href="https://x.com/ToolMines_AI" class="card-link" target="_blank">@ToolMinesAI</a>
+                            </div>
+                        </div>
+                        <div class="floating-card reveal-right delay-5">
+                            <i class="ph ph-linkedin-logo"></i>
+                            <div class="card-content">
+                                <h4>LinkedIn</h4>
+                                <p>Professional updates and insights</p>
+                                <a href="https://www.linkedin.com/in/toolmines-ai-930245348" class="card-link" target="_blank">ToolMines AI</a>
+                            </div>
+                        </div>
+                        <div class="floating-card reveal-right delay-6">
+                            <i class="ph ph-discord-logo"></i>
+                            <div class="card-content">
+                                <h4>Discord</h4>
+                                <p>Join our developer community</p>
+                                <a href="https://discord.gg/ySuVr6s6" class="card-link" target="_blank">ToolMines Community</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-hero-shape"></div>
+                </div>
+            </div>
+
+            <div class="contact-hero-bg">
+                <div class="animated-dots"></div>
+                <div class="gradient-overlay"></div>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-method animate-slide-in">
+                            <i class="ph ph-envelope contact-icon"></i>
+                            <div class="contact-details">
+                                <h3>Email Us</h3>
+                                <p>toolminesai@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-method animate-slide-in">
+                            <i class="ph ph-clock contact-icon"></i>
+                            <div class="contact-details">
+                                <h3>Working Hours</h3>
+                                <p>Monday - Friday: 9 AM - 6 PM PST</p>
+                            </div>
+                        </div>
+                        <div class="contact-method animate-slide-in">
+                            <i class="ph ph-handshake contact-icon"></i>
+                            <div class="contact-details">
+                                <h3>Connect with us</h3>
+                                <p>We're on a mission to make AI accessible to everyone. Join our community to stay updated with the latest AI trends and innovations.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form animate-fade-up">
+                        <h2>Send us a Message</h2>
+                        <div id="form-message" class="form-message"></div>
+                        <form id="contact-form" action="/submit-contact" method="POST" onsubmit="handleSubmit(event)">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Your Name</label>
+                                <input type="text" id="name" name="name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" id="subject" name="subject" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea id="message" name="message" class="form-input form-textarea" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary submit-btn">
+                                <span class="btn-text">Send Message</span>
+                                <div class="btn-loader"></div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="map-section">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.6282365564083!2d-122.08374688447537!3d37.42199997982367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fba02425dad8f%3A0x6c296c66619367e0!2sGoogleplex!5e0!3m2!1sen!2sus!4v1628097592805!5m2!1sen!2sus"
+                width="100%"
+                height="100%"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy">
+            </iframe>
+        </div>
+    </main>
+
+    {% include 'layout/footer.html' %}
+    
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Get form and message elements
+            const form = document.getElementById('contact-form');
+            const messageDiv = document.getElementById('form-message');
+            const submitBtn = form.querySelector('.submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            btnText.textContent = 'Sending...';
+            messageDiv.textContent = '';
+            messageDiv.className = 'form-message';
+            
+            try {
+                // Send form data
+                const formData = new FormData(form);
+                const response = await fetch('/submit-contact', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.redirected) {
+                    // Store form data in session storage before redirect
+                    const formDataObj = {};
+                    formData.forEach((value, key) => {
+                        formDataObj[key] = value;
+                    });
+                    sessionStorage.setItem('pendingContactForm', JSON.stringify(formDataObj));
+                    window.location.href = response.url;
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'form-message success';
+                    form.reset();
+                    // Clear stored form data if exists
+                    sessionStorage.removeItem('pendingContactForm');
+                } else {
+                    // Show error message
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                // Show error message
+                messageDiv.textContent = 'An error occurred. Please try again later.';
+                messageDiv.className = 'form-message error';
+            } finally {
+                // Reset button state
+                submitBtn.classList.remove('loading');
+                btnText.textContent = 'Send Message';
+            }
+        }
+
+        // Check for pending form data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const pendingFormData = sessionStorage.getItem('pendingContactForm');
+            if (pendingFormData) {
+                const form = document.getElementById('contact-form');
+                const data = JSON.parse(pendingFormData);
+                
+                // Fill form with stored data
+                Object.keys(data).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
+                
+                // Automatically submit the form
+                handleSubmit(new Event('submit'));
+                
+                // Clear stored data
+                sessionStorage.removeItem('pendingContactForm');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions - Your App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .legal-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .legal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .legal-content {
+            line-height: 1.6;
+        }
+        .legal-content h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        .legal-content p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="legal-container">
+        <a href="{{ url_for('auth.register') }}" class="back-link">← Back to Registration</a>
+        
+        <div class="legal-header">
+            <h1>Terms and Conditions</h1>
+            <p>Last updated: {{ current_date }}</p>
+        </div>
+        
+        <div class="legal-content">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing and using this application, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+            <h2>2. User Account</h2>
+            <p>To use certain features of the application, you must register for an account. You agree to provide accurate information and keep it updated.</p>
+
+            <h2>3. User Conduct</h2>
+            <p>You agree to use the application only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+            <ul>
+                <li>Use the application in any way that violates any applicable laws</li>
+                <li>Attempt to gain unauthorized access to any part of the application</li>
+                <li>Interfere with the proper working of the application</li>
+            </ul>
+
+            <h2>4. Intellectual Property</h2>
+            <p>The application and its original content, features, and functionality are owned by us and are protected by international copyright, trademark, and other intellectual property laws.</p>
+
+            <h2>5. Termination</h2>
+            <p>We may terminate or suspend your account and bar access to the application immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever.</p>
+
+            <h2>6. Changes to Terms</h2>
+            <p>We reserve the right to modify these terms at any time. We will notify users of any changes by updating the date at the top of this page.</p>
+
+            <h2>7. Contact Us</h2>
+            <p>If you have any questions about these Terms, please contact us.</p>
+        </div>
+    </div>
+</body>
+</html>

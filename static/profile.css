@@ -1,0 +1,118 @@
+/* Profile Page Styles */
+:root {
+    --primary: #5950FF;
+    --primary-dark: #4A43E2;
+    --secondary: #FF5757;
+    --text-primary: #2D3748;
+    --text-secondary: #4A5568;
+    --bg-light: #F7FAFC;
+    --bg-dark: #1A202C;
+    --success: #48BB78;
+    --warning: #ECC94B;
+    --error: #F56565;
+}
+
+.body {
+    margin-top: 180px;
+}
+
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 180px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    margin: 0 auto 20px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #666;
+}
+
+.profile-info {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.info-item {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.info-label {
+    width: 120px;
+    font-weight: 600;
+    color: #666;
+}
+
+.info-value {
+    flex: 1;
+    color: #333;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.action-buttons .btn {
+    padding: 12px 24px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-header,
+.stat-card,
+.section-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.stat-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.section-card:nth-child(2) {
+    animation-delay: 0.3s;
+}
