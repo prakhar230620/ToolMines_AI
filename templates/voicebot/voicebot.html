@@ -57,17 +57,17 @@
             box-shadow: 0 0 30px rgba(0, 0, 255, 0.2);
             animation: slideIn 1s ease;
         }
-        
+
         .chat-container:hover {
             transform: translateY(-5px);
-            box-shadow: 
+            box-shadow:
             0 10px 20px rgba(0, 0, 0, 0.5),
             0 6px 6px rgba(0, 0, 0, 0.6),
             inset 0 0 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(55deg, #000000 50%, #051eff 50%,#000000 40%,#051eff 25%);  
+            background: linear-gradient(55deg, #000000 50%, #051eff 50%,#000000 40%,#051eff 25%);
             backdrop-filter: blur(5px);
-            border:2px solid #000000; 
-              
+            border:2px solid #000000;
+
         }
 
         .chat-header {
@@ -96,13 +96,13 @@
         }
 
         .bot-message {
-            
+
             align-self: flex-start;
             border-bottom-left-radius: 5px;
         }
 
         .user-message {
-            
+
             align-self: flex-end;
             border-bottom-right-radius: 5px;
         }
@@ -194,7 +194,7 @@
                 <span></span><span></span>
             </div>
         </div>
-        
+
         <div class="chat-messages" id="chat-messages">
             <div class="message bot-message">
                 Click the microphone to start speaking.
@@ -215,7 +215,7 @@
         const statusText = document.getElementById('status-text');
         const messagesContainer = document.getElementById('chat-messages');
         const voiceBars = document.getElementById('voice-bars');
-        
+
         let isListening = false;
         const socket = io();
 
