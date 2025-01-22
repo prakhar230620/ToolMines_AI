@@ -3,6 +3,7 @@ from flask import render_template, request, jsonify, session
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from utils.api_key_manager import APIKeyManager
 
 load_dotenv()
 class ChatSession:
@@ -12,7 +13,7 @@ class ChatSession:
 
 class ChatbotHandler:
     def __init__(self):
-        self.client = Groq(api_key = os.environ.get("GROQ_API_KEY"))
+        self.api_key_manager = APIKeyManager()
         self.sessions = {}  # Temporary session storage
         self.system_prompt = {
             "role": "system",
