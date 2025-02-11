@@ -1,16 +1,1 @@
-[
-  {
-    "name": "AI PDF Maker",
-    "icon": "ph ph-file-pdf",
-    "description": "Experience the new AI-powered PDF generator. Create high-quality PDF documents from any text-based content with ease.",
-    "launch_date": "25-05-2025",
-    "progress": "40",
-    "features": [
-      "Text-to-PDF Generation",
-      "Generates PDFs from any text-based content",
-      "Supports multiple languages and formats",
-      "Offers a user-friendly interface for easy use"
-    ],
-    "id": 1
-  }
-]
+[{"name": "AI PDF Maker", "icon": "ph ph-file-pdf", "description": "Experience the new AI-powered PDF generator. Create high-quality PDF documents from any text-based content with ease.", "launch_date": "2025-06", "progress": "10", "features": ["Text-to-PDF Generation", "Generates PDFs from any text-based content", "Supports multiple languages and formats", "Offers a user-friendly interface for easy use"], "id": 1}]
