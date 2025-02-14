@@ -28,8 +28,8 @@ import os
 import sys
 from flask_login import LoginManager, current_user
 from admin import init_admin
-
-
+from waitress import serve
+from engineio.async_drivers import threading
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -58,8 +58,8 @@ def load_user(user_id):
 # Initialize Flask-Admin
 admin = init_admin(app)
 
-# Initialize SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+# Initialize SocketIO with threading mode
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', message_queue='redis://')
 
 # Register blueprints
 app.register_blueprint(auth)
@@ -132,6 +132,16 @@ setup_converter_routes(app, socketio, auth_required=auth_required, track_tool_us
 setup_newsletter_service(app,email_service)
 setup_contactform_routes(app)
 
-# Run the app
+# Create the wsgi app
+wsgi_app = app.wsgi_app
+
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True)
+    # For development
+    if os.environ.get('FLASK_ENV') == 'development':
+        socketio.run(app, debug=True, port=5000)
+    # For production with Waitress
+    else:
+        print("Starting server in production mode...")
+        serve(wsgi_app, host='localhost', port=5000, threads=4)
+        # Start SocketIO in a separate thread
+        socketio.init_app(app)

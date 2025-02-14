@@ -1,9 +1,11 @@
 from PIL import Image
 import os
-from wand.image import Image as WandImage
-from io import BytesIO
 import svglib.svglib
 from reportlab.graphics import renderPM
+import cairosvg  # For vector formats
+import rawpy  # For RAW images
+import numpy as np
+from reportlab.graphics import renderPDF
 
 class ImageConverter:
     def __init__(self):
@@ -67,38 +69,63 @@ class ImageConverter:
             raise Exception(f"Image conversion failed: {str(e)}")
     
     def _convert_svg(self, input_path, output_path, output_format):
-        """Convert SVG using svglib instead of CairoSVG"""
+        """Convert SVG using svglib and cairosvg"""
         try:
-            # Read SVG file
-            drawing = svglib.svglib.svg2rlg(input_path)
-            
-            if output_format in ['png', 'jpg', 'jpeg', 'gif', 'bmp']:
-                # Convert to raster format
-                renderPM.drawToFile(drawing, output_path, fmt=output_format.upper())
+            if output_format in ['png', 'jpg', 'jpeg']:
+                # Use cairosvg for better quality raster conversion
+                cairosvg.svg2png(url=input_path, write_to=output_path) if output_format == 'png' else \
+                cairosvg.svg2jpg(url=input_path, write_to=output_path)
             elif output_format == 'pdf':
-                # For PDF output, use reportlab
-                from reportlab.graphics import renderPDF
+                # For PDF output, use svglib with reportlab
+                drawing = svglib.svglib.svg2rlg(input_path)
                 renderPDF.drawToFile(drawing, output_path)
             else:
-                raise ValueError(f"Unsupported output format for SVG conversion: {output_format}")
+                # Use svglib for other formats
+                drawing = svglib.svglib.svg2rlg(input_path)
+                renderPM.drawToFile(drawing, output_path, fmt=output_format.upper())
         except Exception as e:
             raise Exception(f"SVG conversion failed: {str(e)}")
     
     def _convert_vector(self, input_path, output_path, input_format, output_format):
-        """Convert vector formats using Wand"""
+        """Convert vector formats using cairosvg"""
         try:
-            with WandImage(filename=input_path) as img:
-                img.format = output_format.upper()
-                img.save(filename=output_path)
+            # First convert to SVG if needed (for EPS/PDF)
+            if input_format in ['eps', 'pdf']:
+                # Use pdf2svg or eps2svg utilities via subprocess if needed
+                # For now, we'll raise an error as this requires additional tools
+                raise NotImplementedError(f"Direct {input_format} conversion not supported yet. Please convert to SVG first.")
+            
+            # Then convert from SVG to target format
+            if output_format == 'png':
+                cairosvg.svg2png(url=input_path, write_to=output_path)
+            elif output_format in ['jpg', 'jpeg']:
+                cairosvg.svg2jpg(url=input_path, write_to=output_path)
+            elif output_format == 'pdf':
+                cairosvg.svg2pdf(url=input_path, write_to=output_path)
+            else:
+                raise ValueError(f"Unsupported vector output format: {output_format}")
         except Exception as e:
             raise Exception(f"Vector conversion failed: {str(e)}")
     
     def _convert_raw(self, input_path, output_path, input_format, output_format):
-        """Convert RAW formats using Wand"""
+        """Convert RAW formats using rawpy"""
         try:
-            with WandImage(filename=input_path) as img:
-                img.format = output_format.upper()
-                img.save(filename=output_path)
+            with rawpy.imread(input_path) as raw:
+                # Convert RAW to RGB numpy array
+                rgb = raw.postprocess()
+                
+                # Convert numpy array to PIL Image
+                img = Image.fromarray(rgb)
+                
+                # Save with optimal settings
+                if output_format.lower() in ['jpg', 'jpeg']:
+                    img.save(output_path, quality=95, optimize=True)
+                elif output_format.lower() == 'png':
+                    img.save(output_path, optimize=True)
+                elif output_format.lower() == 'webp':
+                    img.save(output_path, quality=95, method=6)
+                else:
+                    img.save(output_path)
         except Exception as e:
             raise Exception(f"RAW conversion failed: {str(e)}")
     
