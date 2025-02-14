@@ -12,5 +12,5 @@
             "dest": "main.py"
         }
     ],
-    "installCommand": "pip install --no-cache-dir -r requirements.txt"
+    "installCommand": "pip install --no-cache-dir --target=.venv -r requirements.txt"
 }
