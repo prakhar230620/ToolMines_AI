@@ -43,7 +43,7 @@ edge-tts
 pygame
 langdetect
 flask>=2.3.2
-pymongo>=4.6.3
+pymongo
 bcrypt>=4.0.1
 pycryptodome>=3.10.1
 google-auth>=2.3.3
