@@ -1,6 +1,6 @@
 import re
 import speech_recognition as sr
-import pyaudio
+import sounddevice as sd
 import numpy as np
 from pydub import AudioSegment
 from pydub.effects import normalize
@@ -86,7 +86,7 @@ chat_history = [
 ]
 
 # Audio recording parameters
-FORMAT = pyaudio.paInt16
+FORMAT = 'int16'
 CHANNELS = 1
 RATE = 16000
 CHUNK_DURATION_MS = 20
@@ -110,58 +110,45 @@ class AudioStreamer:
             self.dev_mode = True
 
     def initialize_audio(self):
-        """Separate initialization method with additional error checking"""
-        try:
-            self.audio = pyaudio.PyAudio()
+       """Separate initialization method with additional error checking"""
+       try:
+           # Get list of available devices
+           devices = sd.query_devices()
+           if len(devices) == 0:
+               raise Exception("No audio devices found")
 
-            # Get list of available devices
-            device_count = self.audio.get_device_count()
-            if device_count == 0:
-                raise Exception("No audio devices found")
+           # Find a working input device
+           input_device = None
+           for device in devices:
+               if device['max_input_channels'] > 0:
+                   try:
+                       # Test if we can actually use this device
+                       sd.check_input_settings(device=device['name'], channels=CHANNELS, samplerate=RATE)
+                       input_device = device['name']
+                       break
+                   except sd.PortAudioError:
+                       continue
 
-            # Find a working input device
-            input_device = None
-            for i in range(device_count):
-                try:
-                    device_info = self.audio.get_device_info_by_index(i)
-                    if device_info['maxInputChannels'] > 0:
-                        # Test if we can actually open this device
-                        test_stream = self.audio.open(
-                            format=FORMAT,
-                            channels=1,
-                            rate=RATE,
-                            input=True,
-                            input_device_index=i,
-                            frames_per_buffer=CHUNK_SIZE,
-                            start=False  # Don't actually start the stream
-                        )
-                        test_stream.close()
-                        input_device = i
-                        break
-                except Exception:
-                    continue
+           if input_device is None:
+               raise Exception("No working input devices found")
 
-            if input_device is None:
-                raise Exception("No working input devices found")
+           # Initialize the actual stream
+           self.stream = sd.InputStream(
+               samplerate=RATE,
+               channels=CHANNELS,
+               dtype='int16',
+               device=input_device,
+               blocksize=CHUNK_SIZE
+           )
+           self.stream.start()
 
-            # Initialize the actual stream
-            self.stream = self.audio.open(
-                format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                input_device_index=input_device,
-                frames_per_buffer=CHUNK_SIZE
-            )
+           self.vad = webrtcvad.Vad(VAD_MODE)
+           self.is_recording = False
+           self.frames = []
 
-            self.vad = webrtcvad.Vad(VAD_MODE)
-            self.is_recording = False
-            self.frames = []
+       except Exception as e:
+           raise Exception(f"Audio initialization failed: {str(e)}")
 
-        except Exception as e:
-            if self.audio:
-                self.audio.terminate()
-            raise Exception(f"Audio initialization failed: {str(e)}")
 
     def start_recording(self, stop_event):
         if self.dev_mode:
@@ -182,7 +169,8 @@ class AudioStreamer:
 
         while self.is_recording and not stop_event.is_set():
             try:
-                chunk = self.stream.read(CHUNK_SIZE, exception_on_overflow=False)
+                chunk, _ = self.stream.read(CHUNK_SIZE)
+                chunk = chunk.tobytes()
                 if not chunk:
                     continue
 
@@ -214,12 +202,8 @@ class AudioStreamer:
     def close(self):
         try:
             if self.stream:
-                if self.stream.is_active():
-                    self.stream.stop_stream()
+                self.stream.stop()
                 self.stream.close()
-            if self.audio:
-                self.audio.terminate()
-            logging.info("Audio resources released")
         except Exception as e:
             logging.error(f"Error closing audio resources: {e}")
 
@@ -368,3 +352,4 @@ def continuous_stt(input_queue, stop_event, audio_streamer, socketio):
     finally:
         audio_streamer.stop_recording()
         audio_streamer.close()
+

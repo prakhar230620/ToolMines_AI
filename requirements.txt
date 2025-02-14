@@ -30,7 +30,7 @@ groq
 flask
 python-dotenv
 speechrecognition
-pyaudio
+sounddevice
 numpy
 scipy
 scikit-learn
