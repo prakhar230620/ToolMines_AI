@@ -22,7 +22,7 @@ class DatabaseManager:
     
     def connect(self, max_retries=3, retry_delay=5):
         """Connect to MongoDB with retry mechanism"""
-        MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
+        MONGO_URI = "mongodb+srv://toolminesai:tY9uqb1WnxVf7A6L@mycluster0.u8ntx.mongodb.net/?retryWrites=true&w=majority&appName=Mycluster0"
         
         for attempt in range(max_retries):
             try:
