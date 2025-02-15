@@ -12,6 +12,7 @@ from routes.admin_auth import admin_auth
 from routes.admin_dashboard import admin_dashboard
 from routes.admin_upcoming import admin_upcoming
 from routes.admin_index import admin_index
+from gateway import gateway
 from functools import wraps
 import re
 from contact.email_service import EmailService,setup_newsletter_service
@@ -67,6 +68,7 @@ app.register_blueprint(admin_auth)
 app.register_blueprint(admin_dashboard)
 app.register_blueprint(admin_upcoming)
 app.register_blueprint(admin_index)
+app.register_blueprint(gateway)  # Register the gateway blueprint
 
 # Initialize contact handler
 contact_handler = ContactHandler()
@@ -123,10 +125,15 @@ def upcoming():
     return render_template('index/upcoming.html', stats=stats, tools=tools)
 
 # Register tools routes with authentication and usage tracking
-setup_chatbot_routes(app, auth_required=auth_required, track_tool_usage=track_tool_usage)
-setup_voicebot_routes(app, socketio, auth_required=auth_required, track_tool_usage=track_tool_usage)
-setup_lang_trans_routes(app, auth_required=auth_required, track_tool_usage=track_tool_usage)
-setup_converter_routes(app, socketio, auth_required=auth_required, track_tool_usage=track_tool_usage)
+if os.environ.get('FLASK_ENV') == 'development':
+    # In development, register tools directly
+    setup_chatbot_routes(app, auth_required=auth_required, track_tool_usage=track_tool_usage)
+    setup_voicebot_routes(app, socketio, auth_required=auth_required, track_tool_usage=track_tool_usage)
+    setup_lang_trans_routes(app, auth_required=auth_required, track_tool_usage=track_tool_usage)
+    setup_converter_routes(app, socketio, auth_required=auth_required, track_tool_usage=track_tool_usage)
+else:
+    # In production, tools will be accessed through the gateway
+    pass
 
 # Register contact form and newsletter routes
 setup_newsletter_service(app,email_service)
