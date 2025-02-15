@@ -12,6 +12,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from contact.email_service import EmailService
+from config.jwt_config import generate_token
 
 # Load environment variables
 load_dotenv()
@@ -73,6 +74,10 @@ def login():
                     session['user_id'] = user.email
                     session['is_admin'] = user.is_admin
                     session['name'] = user.name
+                    
+                    # Generate JWT token
+                    token = generate_token(user.email)
+                    session['jwt_token'] = token
                     
                     # Get next URL from either form data or session
                     next_url = request.form.get('next') or session.get('next_url')
@@ -361,4 +366,3 @@ def terms():
 @auth.route('/privacy')
 def privacy():
     return render_template('legal/privacy.html', current_date=datetime.now().strftime('%B %d, %Y'))
-
